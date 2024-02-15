@@ -4,6 +4,7 @@
 
 from openai import AzureOpenAI
 import re
+import requests
 
 ROLE = """
 When requested to write code, pick Python.
@@ -64,6 +65,25 @@ def extract(text):
         return res
     return res
 
+def get_email(text):
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    emails = re.findall(email_pattern, text)
+    if emails:
+        # I get only the first email address
+        return emails[0]
+    return None
+
+def notify_slack(payload, slack_url):
+    print("Sending Slack notification...")
+    response = requests.post(slack_url, json=payload, headers={'Content-type': 'application/json'})
+    print(f"Slack notification response: {response.text}")
+
+def handle_email(text, slack_url):
+    email = get_email(text)
+    if email:
+        payload = {"text": f"New email detected: {email}"}
+        notify_slack(payload, slack_url)
+
 def main(args):
     global AI
     (key, host) = (args["OPENAI_API_KEY"], args["OPENAI_API_HOST"])
@@ -79,6 +99,8 @@ def main(args):
     else:
         output = ask(input)
         res = extract(output)
+        slack_url = "https://hooks.slack.com/services/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" # to get from .env
+        handle_email(input, slack_url)
         res['output'] = output
 
     return {"body": res }
