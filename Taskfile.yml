@@ -102,6 +102,7 @@ tasks:
                     echo "NUVDEV_HOST=https://$NUVDEV_USERNAME.nuvolaris.dev" >>.env
                     echo "OPENAI_API_HOST=https://openai.nuvolaris.io" >>.env
                     echo "$AUTH" | awk -F: '{print "OPENAI_API_KEY=" $1 }' >>.env
+                    echo "SLACK_URL=https://hooks.slack.com/services/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" >>.env
                 fi
             done
             echo "**************************************************************************************"

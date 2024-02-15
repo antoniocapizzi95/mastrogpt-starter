@@ -86,7 +86,7 @@ def handle_email(text, slack_url):
 
 def main(args):
     global AI
-    (key, host) = (args["OPENAI_API_KEY"], args["OPENAI_API_HOST"])
+    (key, host, slack_url) = (args["OPENAI_API_KEY"], args["OPENAI_API_HOST"], args["SLACK_URL"])
     AI = AzureOpenAI(api_version="2023-12-01-preview", api_key=key, azure_endpoint=host)
 
     input = args.get("input", "")
@@ -99,7 +99,6 @@ def main(args):
     else:
         output = ask(input)
         res = extract(output)
-        slack_url = "https://hooks.slack.com/services/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" # to get from .env
         handle_email(input, slack_url)
         res['output'] = output
 
